@@ -23,8 +23,10 @@ class CInputJoyPad : public CDirectInput
 private:
 	static const int MAX_JOY_KEY = 32;		//ジョイパッドの使ってないキーを含めた最大数
 	static const int JOYPAD_DATA_MAX = 4;	//同時接続可能最大数
+	static const int KEY_CONFIG_SUPPORTED_KEY_NUMBER = 13; //キーコンフィグ対応のキー数
+	static const int LINE_MAX_READING_LENGTH = 256; //読み込み際の1行当たりの最大文字数
 
-											//ジョイパッドのひとつに必要な情報の構造体
+	//ジョイパッドのひとつに必要な情報の構造体
 	struct SJoyPad
 	{
 		LPDIRECTINPUTDEVICE8 pInputDevice;				//入力デバイスへのポインタ
@@ -78,10 +80,14 @@ public:
 	D3DXVECTOR3 GetJoyStickData(int nNum, bool bleftandright = false);			//ジョイスティックの傾き値を返す(true  = 右、false = 左)
 	int GetCross(int nNum = 0) { return m_JoyPadData[nNum].nCrossPressRot; }	//ジョイパッドの十字キーの押されている方向(例　45°など)
 
+	void KeyConfigLoading();			//キーコンフィグの読み込み
+	void KeyConfigSave();				//キーコンフィグの保存
+
 private:
 	SJoyPad m_JoyPadData[JOYPAD_DATA_MAX];		//ジョイパッドのひとつに必要な情報の構造体
 	DirectJoypad m_AllOldKeyTrigger;			//全ジョイパッド共通の前回されたトリガーキー
 	DirectJoypad m_AllOldKeyRelease;			//全ジョイパッド共通の前回されたリリースキー
 	int m_nJoyNumCnt;							//現在接続の接続数
+	DirectJoypad m_KeyConfig[JOYPAD_DATA_MAX][KEY_CONFIG_SUPPORTED_KEY_NUMBER]; //キーコンフィグの対応用（この変数内の数値によって認識するキーが変わる）
 };
 #endif

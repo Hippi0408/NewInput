@@ -13,7 +13,7 @@
 #include "object.h"
 #include <cstdio>
 #include "game.h"
-
+#include "input.h"
 
 //*****************************************************************************
 // ƒOƒ[ƒoƒ‹•Ï”éŒ¾
@@ -173,6 +173,8 @@ void CRenderer::DrawFPS(const int nFps)
 {
 	RECT rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	TCHAR str[256];
+
+	CInput* pInput = CInput::GetKey();
 
 	sprintf(str, _T("FPS : %d\n"), nFps);
 

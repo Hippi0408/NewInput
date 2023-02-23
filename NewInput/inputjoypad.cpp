@@ -10,6 +10,8 @@
 //インクルードファイル
 //-----------------------------------------------------------------------------
 #include "inputjoypad.h"
+#include <stdio.h>
+#include <assert.h>
 
 //*************************************************************************************
 //コンストラクタ
@@ -139,6 +141,10 @@ HRESULT CInputJoyPad::Init(HINSTANCE hInstance, HWND hWnd)
 		}
 
 	}
+
+	//キーコンフィグの読み込み
+	KeyConfigLoading();
+
 	return S_OK;
 }
 
@@ -214,7 +220,7 @@ bool CInputJoyPad::GetPress(DirectJoypad eKey, int nNum)
 	{
 		return GetCrossPress(eKey, nNum);
 	}
-	return (m_JoyPadData[nNum].aKeyState.rgbButtons[eKey] & 0x80) ? true : false;
+	return (m_JoyPadData[nNum].aKeyState.rgbButtons[m_KeyConfig[nNum][eKey]] & 0x80) ? true : false;
 }
 
 //トリガー処理
@@ -229,7 +235,7 @@ bool CInputJoyPad::GetTrigger(DirectJoypad eKey, int nNum)
 	{
 		return GetCrossTrigger(eKey, nNum);
 	}
-	return (m_JoyPadData[nNum].aKeyStateTrigger.rgbButtons[eKey] & 0x80) ? true : false;
+	return (m_JoyPadData[nNum].aKeyStateTrigger.rgbButtons[m_KeyConfig[nNum][eKey]] & 0x80) ? true : false;
 }
 
 //リリース処理
@@ -244,7 +250,7 @@ bool CInputJoyPad::GetRelease(DirectJoypad eKey, int nNum)
 	{
 		return GetCrossRelease(eKey, nNum);
 	}
-	return (m_JoyPadData[nNum].aKeyStateRelease.rgbButtons[eKey] & 0x80) ? true : false;
+	return (m_JoyPadData[nNum].aKeyStateRelease.rgbButtons[m_KeyConfig[nNum][eKey]] & 0x80) ? true : false;
 }
 
 //十字キープレス処理
@@ -613,4 +619,155 @@ D3DXVECTOR3 CInputJoyPad::GetJoyStickData(int nNum, bool bleftandright)
 	}
 
 	return D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+}
+
+//キーコンフィグの読み込み
+void CInputJoyPad::KeyConfigLoading()
+{
+	FILE *pFile = NULL;			//ファイルポインター宣言
+
+	char cBff[LINE_MAX_READING_LENGTH];		//一行分読み取るための変数
+	char cBffHead[LINE_MAX_READING_LENGTH];	//頭の文字を読み取るための変数
+
+	//ファイルを開く
+	pFile = fopen("KeyConfigData.txt", "r");
+
+	if (pFile == nullptr)
+	{//開けなかった時用
+		assert(false);
+	}
+
+	//読み込むコントローラーのカウンター
+	int nCntJoypad = 0;
+
+	//文字列の読み取りループ処理
+	while (fgets(cBff, LINE_MAX_READING_LENGTH, pFile) != nullptr)
+	{
+		//文字列の分析
+		sscanf(cBff, "%s", &cBffHead);
+
+		if (strcmp(&cBffHead[0], "ONE_MINUTES_LOADING") == 0)
+		{//コントローラー　一個分のキーコンフィグの読み込み
+
+			//読み込んだコントローラーの数が規定数以上だったら
+			if (nCntJoypad >= JOYPAD_DATA_MAX)
+			{
+				assert(false);
+			}
+
+			//読み込んだKeyのカウンター
+			int nCntKey = 0; 
+
+			//キーコンフィグデータの一時保存
+			DirectJoypad KeyConfig[KEY_CONFIG_SUPPORTED_KEY_NUMBER];
+
+			//文字列の読み取りループ処理
+			while (fgets(cBff, LINE_MAX_READING_LENGTH, pFile) != nullptr)
+			{
+				//文字列の分析
+				sscanf(cBff, "%s", &cBffHead);
+				
+				if (strcmp(&cBffHead[0], "KEY") == 0)
+				{//ボタン一個分のキーコンフィグの読み込み
+
+					//カウンターが規定数以上だったら
+					if (nCntKey >= KEY_CONFIG_SUPPORTED_KEY_NUMBER)
+					{
+						//以下の処理を無視する
+						continue;
+					}
+
+					//文字列の分析
+					sscanf(cBff, "%s = %d", &cBffHead, &KeyConfig[nCntKey]);
+
+					//規定の範囲を超えていた場合はエラー防止のため０を代入する
+					if (KeyConfig[nCntKey] >= KEY_CONFIG_SUPPORTED_KEY_NUMBER || KeyConfig[nCntKey] < 0)
+					{
+						KeyConfig[nCntKey] = (DirectJoypad)0;
+					}
+
+					//読み込みカウンターを進める
+					nCntKey++;
+				}
+				else if (strcmp(&cBffHead[0], "ONE_MINUTES_LOADING_END") == 0)
+				{//コントローラー　一個分のキーコンフィグの読み込みの終わり
+
+					//読み込んだ情報の保存
+					for (int nCnt = 0; nCnt < KEY_CONFIG_SUPPORTED_KEY_NUMBER; nCnt++)
+					{
+						m_KeyConfig[nCntJoypad][nCnt] = KeyConfig[nCnt];
+					}
+
+					//読み込んだコントローラーカウンターを進める
+					nCntJoypad++;
+
+					break;
+				}
+
+				//保存中の文字列の初期化
+				ZeroMemory(&cBff, sizeof(cBff));
+				ZeroMemory(&cBffHead, sizeof(cBffHead));
+			}
+		}
+		else if (strcmp(&cBffHead[0], "END_SCRIPT") == 0)
+		{//スクリプトの終わり
+			break;
+		}
+
+		//保存中の文字列の初期化
+		ZeroMemory(&cBff, sizeof(cBff));
+		ZeroMemory(&cBffHead, sizeof(cBffHead));
+	}
+
+	//ファイルを閉じる
+	fclose(pFile);
+}
+
+//キーコンフィグの保存
+void CInputJoyPad::KeyConfigSave()
+{
+	FILE *pFile = NULL;			//ファイルポインター宣言
+
+	//ファイルを開く
+	pFile = fopen("KeyConfigData.txt", "w");
+
+	if (pFile == nullptr)
+	{//開けなかった時用
+		assert(false);
+	}
+
+	//前文の出力
+	fprintf(pFile, "#==============================================================================\n");
+	fprintf(pFile, "#\n");
+	fprintf(pFile, "# 『KeyConfigData』スクリプトファイル [KeyConfigData.txt]\n");
+	fprintf(pFile, "# Author : 小綱啓仁\n");
+	fprintf(pFile, "#\n");
+	fprintf(pFile, "#==============================================================================\n\n");
+
+	fprintf(pFile, "#------------------------------------------------------------------------------\n");
+	fprintf(pFile, "# キーコンフィグの情報(4コントローラー分)\n");
+	fprintf(pFile, "#------------------------------------------------------------------------------\n\n");
+
+	//保存するコントローラーのFor文
+	for (int nCntJoypad = 0; nCntJoypad < JOYPAD_DATA_MAX; nCntJoypad++)
+	{
+		//テキストにコントローラーのキーコンフィグ一個分の出力の始まり
+		fprintf(pFile, "ONE_MINUTES_LOADING\n\n");
+
+		//保存するKeyのFor文
+		for (int nCntKey = 0; nCntKey < KEY_CONFIG_SUPPORTED_KEY_NUMBER; nCntKey++)
+		{
+			//Key一個分の出力
+			fprintf(pFile, "KEY = %d\n",(int)m_KeyConfig[nCntJoypad][nCntKey]);
+		}
+
+		//テキストにコントローラーのキーコンフィグ一個分の出力の終わり
+		fprintf(pFile, "\nONE_MINUTES_LOADING_END\n\n");
+	}
+
+	//終了テキストの出力
+	fprintf(pFile, "END_SCRIPT		# この行は絶対消さないこと！\n");
+
+	//ファイルを閉じる
+	fclose(pFile);
 }

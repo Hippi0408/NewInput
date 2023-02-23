@@ -64,8 +64,6 @@ public:
 
 	InputType GetOldInputType() { return m_nOldInputType; }		//最後に触ったデバイス
 																
-
-
 private:
 
 	CInputKeyboard *m_pKeyboard;	//キーボードの情報

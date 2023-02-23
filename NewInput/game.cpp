@@ -13,6 +13,7 @@
 #include "input.h"
 #include "texture.h"
 #include <assert.h>
+#include "2dpolygon.h"
 
 //*****************************************************************************
 // コンストラクタ
@@ -33,10 +34,18 @@ CGame::~CGame()
 //*****************************************************************************
 HRESULT CGame::Init()
 {
-	CInput* pInput = CInput::GetKey();
-
-	pInput->SetCursorErase(false);
 	
+	m_p2DPolygon = new C2DPolygon;
+	if (FAILED(m_p2DPolygon->Init()))
+	{
+		return -1;
+	}
+	
+	m_p2DPolygon->SetTextIndex(0);
+	m_p2DPolygon->SetPos(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
+	m_p2DPolygon->SetDiagonalLine(600.0f, 600.0f);
+	m_p2DPolygon->SetPolygon();
+
 	return S_OK;
 }
 
@@ -45,6 +54,12 @@ HRESULT CGame::Init()
 //*****************************************************************************
 void CGame::Uninit()
 {
+	if (m_p2DPolygon != nullptr)
+	{
+		m_p2DPolygon->Uninit();
+		delete m_p2DPolygon;
+		m_p2DPolygon = nullptr;
+	}
 }
 
 //*****************************************************************************
@@ -52,8 +67,7 @@ void CGame::Uninit()
 //*****************************************************************************
 void CGame::Update()
 {
-	CInput* pInput = CInput::GetKey();
-
+	
 }
 
 //*****************************************************************************
@@ -61,4 +75,11 @@ void CGame::Update()
 //*****************************************************************************
 void CGame::Draw()
 {
+	CInput* pInput = CInput::GetKey();
+
+
+	if (pInput->Press(JOYPAD_X))
+	{
+		m_p2DPolygon->Draw();
+	}
 }
