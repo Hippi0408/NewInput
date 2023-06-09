@@ -25,6 +25,7 @@ private:
 	static const int JOYPAD_DATA_MAX = 4;	//同時接続可能最大数
 	static const int KEY_CONFIG_SUPPORTED_KEY_NUMBER = 13; //キーコンフィグ対応のキー数
 	static const int LINE_MAX_READING_LENGTH = 256; //読み込み際の1行当たりの最大文字数
+	static const int DEVICE_ADDITIONAL_INTERVAL_EXECUTING_APP = 120; //アプリ実行中のデバイス追加間隔
 
 	//ジョイパッドのひとつに必要な情報の構造体
 	struct SJoyPad
@@ -36,6 +37,7 @@ private:
 		DirectJoypad aOldKeyTrigger;					//前回押されたトリガーキーの種類
 		DirectJoypad aOldKeyRelease;					//前回押されたリリースキーの種類
 		int nCrossPressRot;								//ジョイパッドの十字キーの押されている方向
+		bool bInit;										//初期登録が完了しているかどうか
 	};
 
 public:
@@ -45,8 +47,11 @@ public:
 	void Uninit(void)override;									//ジョイパッドの終了処理
 	void Update(void)override;									//ジョイパッドの更新処理
 
-																//入力デバイスへのポインタの取得
-	LPDIRECTINPUTDEVICE8 GetInputDevice() { return m_JoyPadData[m_nJoyNumCnt].pInputDevice; }
+	//入力デバイスの登録関数
+	HRESULT JoyPadDeviceRegistration(HWND hWnd);
+
+	//入力デバイスへのポインタの取得
+	LPDIRECTINPUTDEVICE8 GetInputDevice();
 	LPDIRECTINPUTDEVICE8 GetInputDevice(int nNum) { return m_JoyPadData[nNum].pInputDevice; }
 
 	//入力デバイスへのポインタの設定
@@ -84,11 +89,19 @@ public:
 	void KeyConfigLoading();			//キーコンフィグの読み込み
 	void KeyConfigSave();				//キーコンフィグの保存
 
+	//アプリの実行後にデバイスを登録する際に接続されているデバイス数の一時保存のSet,Get,Add
+	void SetAfterAppExecutionJoyNumCnt(int nCnt) { m_nAfterAppExecutionJoyNumCnt = nCnt; }
+	int GetAfterAppExecutionJoyNumCnt() { return m_nAfterAppExecutionJoyNumCnt; }
+	void AddAfterAppExecutionJoyNumCnt() { m_nAfterAppExecutionJoyNumCnt++; }
+
 private:
 	SJoyPad m_JoyPadData[JOYPAD_DATA_MAX];		//ジョイパッドのひとつに必要な情報の構造体
 	DirectJoypad m_AllOldKeyTrigger;			//全ジョイパッド共通の前回されたトリガーキー
 	DirectJoypad m_AllOldKeyRelease;			//全ジョイパッド共通の前回されたリリースキー
 	int m_nJoyNumCnt;							//現在接続の接続数
+	int m_nAfterAppExecutionJoyNumCnt;			//アプリの実行後にデバイスを登録する際に接続されているデバイス数の一時保存
 	DirectJoypad m_KeyConfig[JOYPAD_DATA_MAX][KEY_CONFIG_SUPPORTED_KEY_NUMBER]; //キーコンフィグの対応用（この変数内の数値によって認識するキーが変わる）
+	HWND m_hWnd;								//ウィンドウハンドルの保存
+	int m_nDeviceAdditionalIntervalExecutingApp;//アプリ実行中のデバイス追加間隔
 };
 #endif

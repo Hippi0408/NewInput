@@ -22,6 +22,9 @@ CInputJoyPad::CInputJoyPad()
 	m_nJoyNumCnt = 0;
 	m_AllOldKeyTrigger = JOYPAD_MAX;
 	m_AllOldKeyRelease = JOYPAD_MAX;
+	m_hWnd = nullptr;
+	m_nAfterAppExecutionJoyNumCnt = 0;
+	m_nDeviceAdditionalIntervalExecutingApp = 0;
 }
 
 //*************************************************************************************
@@ -31,7 +34,9 @@ CInputJoyPad::~CInputJoyPad()
 {
 }
 
+//*************************************************************************************
 //デバイスを列挙してデバイスを作成してくれるコールバック関数
+//*************************************************************************************
 BOOL CALLBACK CInputJoyPad::EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext)
 {
 	HRESULT hr;
@@ -39,9 +44,13 @@ BOOL CALLBACK CInputJoyPad::EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidIn
 	CInputJoyPad *pThis = (CInputJoyPad*)pContext;
 	LPDIRECTINPUTDEVICE8 pInputDevice = pThis->GetInputDevice();
 
-	if (pInputDevice != nullptr)
+	//アプリの実行後にデバイスを登録する際に接続されているデバイス数との比較
+	if (pThis->GetJoyPadNumMax() > pThis->GetAfterAppExecutionJoyNumCnt())
 	{
-		return E_FAIL;
+		//アプリの実行後にデバイスを登録する際に接続されているデバイス数の一時保存
+		pThis->AddAfterAppExecutionJoyNumCnt();
+
+		return DIENUM_CONTINUE;
 	}
 
 	hr = m_pInput->CreateDevice(pdidInstance->guidInstance, &pInputDevice, NULL);
@@ -51,7 +60,11 @@ BOOL CALLBACK CInputJoyPad::EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidIn
 		return E_FAIL;
 	}
 
+	//入力デバイスへのポインタの設定
 	pThis->SetInputDevice(pInputDevice);
+
+	//アプリの実行後にデバイスを登録する際に接続されているデバイス数の一時保存
+	pThis->AddAfterAppExecutionJoyNumCnt();
 
 	//次のデバイスを調べるときはDIENUM_CONTINUE最初の一回のみの場合はDIENUM_STOP
 	return DIENUM_CONTINUE;
@@ -100,46 +113,13 @@ BOOL CALLBACK CInputJoyPad::EnumAxesCallback(const DIDEVICEOBJECTINSTANCE *pdido
 //*************************************************************************************
 HRESULT CInputJoyPad::Init(HINSTANCE hInstance, HWND hWnd)
 {
+	//ウィンドウハンドルの保存
+	m_hWnd = hWnd;
 
-	// デバイスの列挙
-	if (FAILED(m_pInput->EnumDevices(
-		DI8DEVCLASS_GAMECTRL,
-		EnumJoysticksCallback,
-		this,
-		DIEDFL_ATTACHEDONLY)))
+	//入力デバイスの登録関数
+	if (FAILED(JoyPadDeviceRegistration(m_hWnd)))
 	{
 		return E_FAIL;
-	}
-
-	for (int nCnt = 0; nCnt < JOYPAD_DATA_MAX; nCnt++)
-	{
-		if (m_JoyPadData[nCnt].pInputDevice == nullptr)
-		{
-			continue;
-		}
-
-		// デバイスのフォーマットの設定
-		HRESULT hr = m_JoyPadData[nCnt].pInputDevice->SetDataFormat(&c_dfDIJoystick);
-
-		if (FAILED(hr))
-		{
-			return E_FAIL;
-		}
-
-		// 協調モードの設定
-		if (FAILED(m_JoyPadData[nCnt].pInputDevice->SetCooperativeLevel(hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
-		{
-			return E_FAIL;
-		}
-
-		//デバイスに対して十字キーの範囲等を指定
-		if (FAILED(m_JoyPadData[nCnt].pInputDevice->EnumObjects(EnumAxesCallback,
-			m_JoyPadData[nCnt].pInputDevice,
-			DIDFT_AXIS)))
-		{
-			return E_FAIL;
-		}
-
 	}
 
 	//キーコンフィグの読み込み
@@ -173,7 +153,25 @@ void CInputJoyPad::Uninit(void)
 //*************************************************************************************
 void CInputJoyPad::Update(void)
 {
-	for (int nCnt = 0; nCnt < JOYPAD_DATA_MAX; nCnt++)
+	//アプリ実行中のデバイス追加間隔
+	if (DEVICE_ADDITIONAL_INTERVAL_EXECUTING_APP < m_nDeviceAdditionalIntervalExecutingApp)
+	{
+		//カウンタの初期化
+		m_nDeviceAdditionalIntervalExecutingApp = 0;
+		//入力デバイスの登録関数
+		if (FAILED(JoyPadDeviceRegistration(m_hWnd)))
+		{
+			assert(false);
+		}
+	}
+	else
+	{
+		//カウンタの加算
+		m_nDeviceAdditionalIntervalExecutingApp++;
+	}
+
+	//入力処理の更新
+	for (int nCnt = 0; nCnt < m_nJoyNumCnt; nCnt++)
 	{
 		if (m_JoyPadData[nCnt].pInputDevice == nullptr)
 		{
@@ -209,6 +207,79 @@ void CInputJoyPad::Update(void)
 			m_JoyPadData[nCnt].nCrossPressRot = (int)(m_JoyPadData[nCnt].aKeyState.rgdwPOV[0] / 100.0f);//ジョイパッドの十字キーの押されている方向
 		}
 	}
+}
+
+//*************************************************************************************
+//入力デバイスの登録関数
+//*************************************************************************************
+HRESULT CInputJoyPad::JoyPadDeviceRegistration(HWND hWnd)
+{
+	//登録のためのカウンターの初期化
+	m_nAfterAppExecutionJoyNumCnt = 0;
+
+	// デバイスの列挙
+	if (FAILED(m_pInput->EnumDevices(
+		DI8DEVCLASS_GAMECTRL,
+		EnumJoysticksCallback,
+		this,
+		DIEDFL_ATTACHEDONLY)))
+	{
+		return E_FAIL;
+	}
+
+	for (int nCnt = 0; nCnt < JOYPAD_DATA_MAX; nCnt++)
+	{
+		//初期登録が完了しているかどうか
+		if (m_JoyPadData[nCnt].bInit)
+		{
+			continue;
+		}
+
+		//デバイスのNULLチェック
+		if (m_JoyPadData[nCnt].pInputDevice == nullptr)
+		{
+			continue;
+		}
+
+		// デバイスのフォーマットの設定
+		HRESULT hr = m_JoyPadData[nCnt].pInputDevice->SetDataFormat(&c_dfDIJoystick);
+
+		if (FAILED(hr))
+		{
+			return E_FAIL;
+		}
+
+		// 協調モードの設定
+		if (FAILED(m_JoyPadData[nCnt].pInputDevice->SetCooperativeLevel(hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
+		{
+			return E_FAIL;
+		}
+
+		//デバイスに対して十字キーの範囲等を指定
+		if (FAILED(m_JoyPadData[nCnt].pInputDevice->EnumObjects(EnumAxesCallback,
+			m_JoyPadData[nCnt].pInputDevice,
+			DIDFT_AXIS)))
+		{
+			return E_FAIL;
+		}
+
+		//初期登録が完了
+		m_JoyPadData[nCnt].bInit = true;
+	}
+
+	return S_OK;
+}
+
+//入力デバイスへのポインタの取得
+LPDIRECTINPUTDEVICE8 CInputJoyPad::GetInputDevice()
+{
+	//登録数が規定数以上だったらNULLを返す
+	if (m_nJoyNumCnt >= JOYPAD_DATA_MAX)
+	{
+		return nullptr;
+	}
+
+	return m_JoyPadData[m_nJoyNumCnt].pInputDevice;
 }
 
 //プレス処理
