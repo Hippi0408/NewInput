@@ -153,6 +153,9 @@ HRESULT CInputJoyPad::Init(HINSTANCE hInstance, HWND hWnd)
 //*************************************************************************************
 void CInputJoyPad::Uninit(void)
 {
+	//キーコンフィグの保存
+	KeyConfigSave();
+
 	for (int nCnt = 0; nCnt < JOYPAD_DATA_MAX; nCnt++)
 	{
 		//入力デバイスの放棄
@@ -619,6 +622,21 @@ D3DXVECTOR3 CInputJoyPad::GetJoyStickData(int nNum, bool bleftandright)
 	}
 
 	return D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+}
+
+//*************************************************************************************
+//キーの入れ替え
+//*************************************************************************************
+void CInputJoyPad::SetKeyConfig(int nPlayerNum, DirectJoypad OldKey, DirectJoypad NewKey)
+{
+	//変更する前のキーの保存
+	DirectJoypad KeySave = m_KeyConfig[nPlayerNum][OldKey];
+
+	//変更対象のキーを変更後のキーに変更
+	m_KeyConfig[nPlayerNum][OldKey] = m_KeyConfig[nPlayerNum][NewKey];
+
+	//一時保存した変更前のキーを変更後キーに入れ替え
+	m_KeyConfig[nPlayerNum][NewKey] = KeySave;
 }
 
 //キーコンフィグの読み込み

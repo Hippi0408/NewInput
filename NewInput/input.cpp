@@ -619,3 +619,17 @@ void CInput::SetCursorErase(bool bUse)
 	// 画面内のカーソルを消すかどうか
 	m_pMouse->SetCursorErase(bUse);
 }
+
+//*************************************************************************************
+//キーの入れ替え
+//*************************************************************************************
+void CInput::SetJoypadKeyConfig(int nPlayerNum, DirectJoypad OldKey, DirectJoypad NewKey)
+{
+	//変更したキーが変更可能番号以上だったらエラー
+	if (OldKey > JOYPAD_HOME || NewKey > JOYPAD_HOME)
+	{
+		return;
+	}
+	//ジョイパッドのキー入れ替え関数を呼ぶ
+	m_pJoyPad->SetKeyConfig(nPlayerNum, OldKey, NewKey);
+}

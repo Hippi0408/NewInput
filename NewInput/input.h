@@ -64,6 +64,7 @@ public:
 
 	InputType GetOldInputType() { return m_nOldInputType; }		//最後に触ったデバイス
 																
+	void SetJoypadKeyConfig(int nPlayerNum, DirectJoypad OldKey, DirectJoypad NewKey); //キーの入れ替え
 private:
 
 	CInputKeyboard *m_pKeyboard;	//キーボードの情報

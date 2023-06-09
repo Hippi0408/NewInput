@@ -80,6 +80,7 @@ public:
 	D3DXVECTOR3 GetJoyStickData(int nNum, bool bleftandright = false);			//ジョイスティックの傾き値を返す(true  = 右、false = 左)
 	int GetCross(int nNum = 0) { return m_JoyPadData[nNum].nCrossPressRot; }	//ジョイパッドの十字キーの押されている方向(例　45°など)
 
+	void SetKeyConfig(int nPlayerNum, DirectJoypad OldKey, DirectJoypad NewKey); //キーの入れ替え
 	void KeyConfigLoading();			//キーコンフィグの読み込み
 	void KeyConfigSave();				//キーコンフィグの保存
 
