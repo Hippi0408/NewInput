@@ -83,7 +83,7 @@ void CGame::Draw()
 		pInput->SetJoypadKeyConfig(0, JOYPAD_X, JOYPAD_A);
 	}
 
-	if (pInput->Press(JOYPAD_X) || pInput->Press(JOYPAD_X,1))
+	if (pInput->Press(KEY_UP))
 	{
 		m_p2DPolygon->Draw();
 	}

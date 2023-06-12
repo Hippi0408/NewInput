@@ -171,7 +171,7 @@ void CInputJoyPad::Update(void)
 	}
 
 	//入力処理の更新
-	for (int nCnt = 0; nCnt < m_nJoyNumCnt; nCnt++)
+	for (int nCnt = 0; nCnt < JOYPAD_DATA_MAX; nCnt++)
 	{
 		if (m_JoyPadData[nCnt].pInputDevice == nullptr)
 		{
@@ -182,11 +182,29 @@ void CInputJoyPad::Update(void)
 		hr = m_JoyPadData[nCnt].pInputDevice->Poll();
 		if (FAILED(hr))
 		{
+			
 			hr = m_JoyPadData[nCnt].pInputDevice->Acquire();
+
 			while (hr == DIERR_INPUTLOST)
 			{
 				hr = m_JoyPadData[nCnt].pInputDevice->Acquire();
 			}
+
+			//デバイスがロストした場合
+			if (hr == DIERR_UNPLUGGED)
+			{
+				m_JoyPadData[nCnt].pInputDevice->Unacquire();
+				m_JoyPadData[nCnt].pInputDevice->Release();
+				m_JoyPadData[nCnt].pInputDevice = nullptr;
+				m_JoyPadData[nCnt].bInit = false;
+				m_nJoyNumCnt--;
+
+				continue;
+			}
+		}
+		else
+		{
+			int d = 0;
 		}
 
 		DIJOYSTATE JoyKey;
@@ -206,6 +224,7 @@ void CInputJoyPad::Update(void)
 			m_JoyPadData[nCnt].aKeyState = JoyKey;//プレス処理の保管
 			m_JoyPadData[nCnt].nCrossPressRot = (int)(m_JoyPadData[nCnt].aKeyState.rgdwPOV[0] / 100.0f);//ジョイパッドの十字キーの押されている方向
 		}
+		
 	}
 }
 
@@ -265,6 +284,7 @@ HRESULT CInputJoyPad::JoyPadDeviceRegistration(HWND hWnd)
 
 		//初期登録が完了
 		m_JoyPadData[nCnt].bInit = true;
+
 	}
 
 	return S_OK;
@@ -280,6 +300,29 @@ LPDIRECTINPUTDEVICE8 CInputJoyPad::GetInputDevice()
 	}
 
 	return m_JoyPadData[m_nJoyNumCnt].pInputDevice;
+}
+
+//入力デバイスへのポインタの設定
+void CInputJoyPad::SetInputDevice(LPDIRECTINPUTDEVICE8 pInputDeviceint)
+{
+	//空いている保存先に検索
+	for (int nCnt = 0; nCnt < JOYPAD_DATA_MAX; nCnt++)
+	{
+		//保存先が空いているかの確認
+		if(m_JoyPadData[nCnt].pInputDevice != nullptr)
+		{
+			continue;
+		}
+
+		//保存
+		m_JoyPadData[nCnt].pInputDevice = pInputDeviceint;
+
+		//処理の終わり
+		break;
+
+	}
+	
+	m_nJoyNumCnt++;
 }
 
 //プレス処理

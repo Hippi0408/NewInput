@@ -55,7 +55,7 @@ public:
 	LPDIRECTINPUTDEVICE8 GetInputDevice(int nNum) { return m_JoyPadData[nNum].pInputDevice; }
 
 	//入力デバイスへのポインタの設定
-	void SetInputDevice(LPDIRECTINPUTDEVICE8 pInputDeviceint) { m_JoyPadData[m_nJoyNumCnt].pInputDevice = pInputDeviceint; m_nJoyNumCnt++; }
+	void SetInputDevice(LPDIRECTINPUTDEVICE8 pInputDeviceint);
 
 	//現在接続されているジョイパッドの数の取得
 	int GetJoyPadNumMax() { return m_nJoyNumCnt; }
