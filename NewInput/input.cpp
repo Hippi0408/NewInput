@@ -633,3 +633,16 @@ void CInput::SetJoypadKeyConfig(int nPlayerNum, DirectJoypad OldKey, DirectJoypa
 	//ジョイパッドのキー入れ替え関数を呼ぶ
 	m_pJoyPad->SetKeyConfig(nPlayerNum, OldKey, NewKey);
 }
+
+//*************************************************************************************
+//ジョイパッドが接続されているかどうか
+//*************************************************************************************
+bool CInput::IsConnected(int nNum)
+{
+	//デバイスデータが存在するかどうか
+	if (m_pJoyPad->GetInputDevice(nNum) != nullptr)
+	{
+		return true;
+	}
+	return false;
+}

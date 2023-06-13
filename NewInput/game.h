@@ -34,7 +34,7 @@ public:
 	void Draw() override;
 
 private:
-	C2DPolygon* m_p2DPolygon;
+	C2DPolygon* m_p2DPolygon[4];
 };
 
 #endif
