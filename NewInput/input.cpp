@@ -458,6 +458,19 @@ void CInput::SetJoypadKeyConfig(int nPlayerNum, DirectJoypad OldKey, DirectJoypa
 }
 
 //*************************************************************************************
+//ジョイパッドが接続されているかどうか
+//*************************************************************************************
+bool CInput::IsConnected(int nNum)
+{
+	//デバイスデータが存在するかどうか
+	if (m_pJoyPad->GetInputDevice(nNum) != nullptr)
+	{
+		return true;
+	}
+	return false;
+}
+
+//*************************************************************************************
 // 全デバイスの入力を確認
 //*************************************************************************************
 bool CInput::KeyChackAll(STAN_DART_INPUT_KEY key, int type)

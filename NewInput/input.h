@@ -88,6 +88,8 @@ public:
 																
 	void SetJoypadKeyConfig(int nPlayerNum, DirectJoypad OldKey, DirectJoypad NewKey); //キーの入れ替え
 
+	bool IsConnected(int nNum);	//ジョイパッドが接続されているかどうか
+
 private:
 	bool KeyChackAll(STAN_DART_INPUT_KEY key, int type);			// 全デバイスの入力を確認
 	bool KeyChackNum(STAN_DART_INPUT_KEY key, int type, int nNum);	// 指定したデバイスの入力を確認

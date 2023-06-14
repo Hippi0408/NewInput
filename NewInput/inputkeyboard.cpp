@@ -83,10 +83,10 @@ void CInputKeyboard::Update(void)
 	{
 		for (nCntKey = 0; nCntKey < NUM_KEY_MAX; nCntKey++)
 		{
-			// マウストリガー情報を保存
+			// キーボードトリガー情報を保存
 			m_aKeyStateTrigger[nCntKey] = ~m_aKeyState[nCntKey] & aKeyState[nCntKey];
 
-			// マウスリリース情報を保存
+			// キーボードリリース情報を保存
 			m_aKeyStateRelease[nCntKey] = m_aKeyState[nCntKey] & ~aKeyState[nCntKey];
 
 			//キーボードのプレス情報を保存

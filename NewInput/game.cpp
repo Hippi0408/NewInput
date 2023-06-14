@@ -34,18 +34,29 @@ CGame::~CGame()
 //*****************************************************************************
 HRESULT CGame::Init()
 {
-	
-	m_p2DPolygon = new C2DPolygon;
-	if (FAILED(m_p2DPolygon->Init()))
+	for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
-		return -1;
-	}
-	
-	m_p2DPolygon->SetTextIndex(0);
-	m_p2DPolygon->SetPos(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-	m_p2DPolygon->SetDiagonalLine(600.0f, 600.0f);
-	m_p2DPolygon->SetPolygon();
+		m_p2DPolygon[nCnt] = new C2DPolygon;
+		if (FAILED(m_p2DPolygon[nCnt]->Init()))
+		{
+			return -1;
+		}
 
+		m_p2DPolygon[nCnt]->SetTextIndex(0);
+		m_p2DPolygon[nCnt]->SetPos(D3DXVECTOR3(200.0f + 400.0f * nCnt, SCREEN_HEIGHT * 0.5f, 0.0f));
+		m_p2DPolygon[nCnt]->SetDiagonalLine(200.0f, 200.0f);
+		
+	}
+
+	m_p2DPolygon[0]->SetColor(D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f));
+	m_p2DPolygon[1]->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	m_p2DPolygon[2]->SetColor(D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+	m_p2DPolygon[3]->SetColor(D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f));
+	
+	for (int nCnt = 0; nCnt < 4; nCnt++)
+	{
+		m_p2DPolygon[nCnt]->SetPolygon();
+	}
 	return S_OK;
 }
 
@@ -54,11 +65,14 @@ HRESULT CGame::Init()
 //*****************************************************************************
 void CGame::Uninit()
 {
-	if (m_p2DPolygon != nullptr)
+	for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
-		m_p2DPolygon->Uninit();
-		delete m_p2DPolygon;
-		m_p2DPolygon = nullptr;
+		if (m_p2DPolygon[nCnt] != nullptr)
+		{
+			m_p2DPolygon[nCnt]->Uninit();
+			delete m_p2DPolygon[nCnt];
+			m_p2DPolygon[nCnt] = nullptr;
+		}
 	}
 }
 
@@ -83,8 +97,12 @@ void CGame::Draw()
 		pInput->SetJoypadKeyConfig(0, JOYPAD_X, JOYPAD_A);
 	}
 
-	if (pInput->Press(KEY_UP))
+	for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
-		m_p2DPolygon->Draw();
+		if (pInput->IsConnected(nCnt) && !pInput->Press(JOYPAD_X, nCnt))
+		{
+			m_p2DPolygon[nCnt]->Draw();
+		}
 	}
+
 }

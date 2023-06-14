@@ -37,7 +37,6 @@ private:
 		DirectJoypad aOldKeyTrigger;					//前回押されたトリガーキーの種類
 		DirectJoypad aOldKeyRelease;					//前回押されたリリースキーの種類
 		int nCrossPressRot;								//ジョイパッドの十字キーの押されている方向
-		bool bInit;										//初期登録が完了しているかどうか
 	};
 
 public:
@@ -51,11 +50,10 @@ public:
 	HRESULT JoyPadDeviceRegistration(HWND hWnd);
 
 	//入力デバイスへのポインタの取得
-	LPDIRECTINPUTDEVICE8 GetInputDevice();
 	LPDIRECTINPUTDEVICE8 GetInputDevice(int nNum) { return m_JoyPadData[nNum].pInputDevice; }
 
-	//入力デバイスへのポインタの設定
-	void SetInputDevice(LPDIRECTINPUTDEVICE8 pInputDeviceint);
+	//入力デバイスへのポインタの設定 (返り値は登録した際の配列番号)
+	int SetInputDevice(LPDIRECTINPUTDEVICE8 pInputDeviceint);
 
 	//現在接続されているジョイパッドの数の取得
 	int GetJoyPadNumMax() { return m_nJoyNumCnt; }
@@ -94,6 +92,9 @@ public:
 	int GetAfterAppExecutionJoyNumCnt() { return m_nAfterAppExecutionJoyNumCnt; }
 	void AddAfterAppExecutionJoyNumCnt() { m_nAfterAppExecutionJoyNumCnt++; }
 
+	//一時保存用デバイスポインタの配列、Set
+	void SetDevicePointer(LPDIRECTINPUTDEVICE8 pDevice) { m_apDevice[m_nAfterAppExecutionJoyNumCnt] = pDevice; m_nAfterAppExecutionJoyNumCnt++; }
+
 private:
 	SJoyPad m_JoyPadData[JOYPAD_DATA_MAX];		//ジョイパッドのひとつに必要な情報の構造体
 	DirectJoypad m_AllOldKeyTrigger;			//全ジョイパッド共通の前回されたトリガーキー
@@ -103,5 +104,6 @@ private:
 	DirectJoypad m_KeyConfig[JOYPAD_DATA_MAX][KEY_CONFIG_SUPPORTED_KEY_NUMBER]; //キーコンフィグの対応用（この変数内の数値によって認識するキーが変わる）
 	HWND m_hWnd;								//ウィンドウハンドルの保存
 	int m_nDeviceAdditionalIntervalExecutingApp;//アプリ実行中のデバイス追加間隔
+	LPDIRECTINPUTDEVICE8 m_apDevice[JOYPAD_DATA_MAX]; //デバイスポインタの一時保存場所
 };
 #endif
