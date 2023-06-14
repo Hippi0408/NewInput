@@ -120,10 +120,11 @@ void CInputMouse::Update(void)
 
 			// マウスリリース情報を保存
 			m_aKeyStateRelease.rgbButtons[nCntKey] = m_aKeyState.rgbButtons[nCntKey] & ~aKeyState.rgbButtons[nCntKey];
-
-			// マウスプレス情報を保存
-			m_aKeyState = aKeyState;
+			
 		}
+
+		// マウスプレス情報を保存
+		m_aKeyState = aKeyState;
 	}
 	else
 	{

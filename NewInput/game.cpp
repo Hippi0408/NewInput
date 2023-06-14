@@ -104,5 +104,5 @@ void CGame::Draw()
 			m_p2DPolygon[nCnt]->Draw();
 		}
 	}
-	
+
 }
