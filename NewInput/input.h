@@ -67,6 +67,7 @@ public:
 	void SetJoypadKeyConfig(int nPlayerNum, DirectJoypad OldKey, DirectJoypad NewKey); //キーの入れ替え
 
 	bool IsConnected(int nNum);	//ジョイパッドが接続されているかどうか
+	int GetIsConnectedNumMax(); //ジョイパッドの接続数
 private:
 
 	CInputKeyboard *m_pKeyboard;	//キーボードの情報

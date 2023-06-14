@@ -25,6 +25,7 @@ CInputJoyPad::CInputJoyPad()
 	m_hWnd = nullptr;
 	m_nAfterAppExecutionJoyNumCnt = 0;
 	m_nDeviceAdditionalIntervalExecutingApp = 0;
+	m_nJoyNumCnt = 0;
 }
 
 //*************************************************************************************
@@ -239,19 +240,19 @@ HRESULT CInputJoyPad::JoyPadDeviceRegistration(HWND hWnd)
 	}
 
 	//データの個数
-	int nDataNum = 0;
+	m_nJoyNumCnt = 0;
 
 	//データの個数のチェック
 	for (int nCnt = 0; nCnt < JOYPAD_DATA_MAX; nCnt++)
 	{
 		if (m_JoyPadData[nCnt].pInputDevice != nullptr)
 		{
-			nDataNum++;
+			m_nJoyNumCnt++;
 		}
 	}
 
 	//前回の登録個数と現在の接続数の比較
-	if (nDataNum == m_nAfterAppExecutionJoyNumCnt)
+	if (m_nJoyNumCnt == m_nAfterAppExecutionJoyNumCnt)
 	{
 		ZeroMemory(&m_apDevice, sizeof(m_apDevice));
 		return S_OK;
