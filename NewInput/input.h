@@ -69,9 +69,6 @@ public:
 	D3DXVECTOR3 VectorMoveJoyStick(int nNum = 0, bool bleftandright = false); //ジョイスティックのベクトル取得
 	D3DXVECTOR3 VectorMoveJoyStickAll(bool bleftandright = false); //ジョイスティックのベクトル取得
 
-	// 繋がってるJoyPadの数
-	int GetAcceptJoyPadCount();
-
 	/* Mouse */
 	bool Press(MOUSE_KEY key);				//プレス
 	bool Trigger(MOUSE_KEY key);			//トリガー
