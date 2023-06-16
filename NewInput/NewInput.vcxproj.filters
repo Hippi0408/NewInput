@@ -39,19 +39,19 @@
     <ClCompile Include="texture.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="DirectInput.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
     <ClCompile Include="input.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="inputjoypad.cpp">
+    <ClCompile Include="input\DirectInput.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="inputkeyboard.cpp">
+    <ClCompile Include="input\inputjoypad.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="inputmouse.cpp">
+    <ClCompile Include="input\inputkeyboard.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="input\inputmouse.cpp">
       <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,23 +80,28 @@
     <ClInclude Include="resource.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="DirectInput.h">
-      <Filter>Input</Filter>
-    </ClInclude>
     <ClInclude Include="input.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="inputjoypad.h">
+    <ClInclude Include="input\DirectInput.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="inputkeyboard.h">
+    <ClInclude Include="input\inputjoypad.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="inputkeydata.h">
+    <ClInclude Include="input\inputkeyboard.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="inputmouse.h">
+    <ClInclude Include="input\inputkeydata.h">
       <Filter>Input</Filter>
     </ClInclude>
+    <ClInclude Include="input\inputmouse.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="input\KeyConfigData.txt">
+      <Filter>Input</Filter>
+    </Text>
   </ItemGroup>
 </Project>

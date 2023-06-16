@@ -9,10 +9,10 @@
 //インクルードファイル
 //-----------------------------------------------------------------------------
 #include "input.h"
-#include "DirectInput.h"
-#include "inputkeyboard.h"
-#include "inputjoypad.h"
-#include "inputmouse.h"
+#include "input\DirectInput.h"
+#include "input\inputkeyboard.h"
+#include "input\inputjoypad.h"
+#include "input\inputmouse.h"
 #include <assert.h>
 
 //-----------------------------------------------------------------------------
