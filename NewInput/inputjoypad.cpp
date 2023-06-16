@@ -466,19 +466,19 @@ bool CInputJoyPad::GetCrossTrigger(DirectJoypad eKey, int nNum)
 		return false;
 	}
 
-	if (m_JoyPadData[nNum].aOldKeyTrigger != eKey
+	if (!m_JoyPadData[nNum].bOldKeyTrigger[eKey - JOYPAD_UP]
 		&& GetCrossPress(eKey, nNum))
 	{
-		m_JoyPadData[nNum].aOldKeyTrigger = eKey;
+		m_JoyPadData[nNum].bOldKeyTrigger[eKey - JOYPAD_UP] = true;
 		return true;
 	}
-	else if (m_JoyPadData[nNum].aOldKeyTrigger == eKey
+	else if (m_JoyPadData[nNum].bOldKeyTrigger[eKey - JOYPAD_UP]
 		&& GetCrossPress(eKey, nNum))
 	{
 		return false;
 	}
 
-	m_JoyPadData[nNum].aOldKeyTrigger = DirectJoypad::JOYPAD_MAX;
+	m_JoyPadData[nNum].bOldKeyTrigger[eKey - JOYPAD_UP] = false;
 	return false;
 }
 
@@ -492,19 +492,17 @@ bool CInputJoyPad::GetCrossRelease(DirectJoypad eKey, int nNum)
 
 	if (GetPress(eKey, nNum))
 	{
-		m_JoyPadData[nNum].aOldKeyRelease = eKey;
+		m_JoyPadData[nNum].bOldKeyRelease[eKey - JOYPAD_UP] = true;
 		return false;
 	}
-	else if(m_JoyPadData[nNum].aOldKeyRelease == eKey
+	else if(m_JoyPadData[nNum].bOldKeyRelease[eKey - JOYPAD_UP]
 		&& !GetPress(eKey, nNum)
-		&& m_JoyPadData[nNum].aOldKeyRelease != JOYPAD_MAX
 		)
 	{
-		m_JoyPadData[nNum].aOldKeyRelease = JOYPAD_MAX;
+		m_JoyPadData[nNum].bOldKeyRelease[eKey - JOYPAD_UP] = false;
 		return true;
 	}
 	
-	m_JoyPadData[nNum].aOldKeyRelease = JOYPAD_MAX;
 	return false;
 }
 

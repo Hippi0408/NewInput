@@ -26,17 +26,20 @@ private:
 	static const int KEY_CONFIG_SUPPORTED_KEY_NUMBER = 13; //キーコンフィグ対応のキー数
 	static const int LINE_MAX_READING_LENGTH = 256; //読み込み際の1行当たりの最大文字数
 	static const int DEVICE_ADDITIONAL_INTERVAL_EXECUTING_APP = 120; //アプリ実行中のデバイス追加間隔
+	static const int DIRECTION_COUNT_OF_STICK_AND_CROSS = 8;//スティックと十字キーの方向数
 
 	//ジョイパッドのひとつに必要な情報の構造体
 	struct SJoyPad
 	{
-		LPDIRECTINPUTDEVICE8 pInputDevice;				//入力デバイスへのポインタ
-		DIJOYSTATE aKeyState;							//ジョイパッドのプレス情報
-		DIJOYSTATE aKeyStateTrigger;					//ジョイパッドのトリガー情報
-		DIJOYSTATE aKeyStateRelease;					//ジョイパッドのリリース情報
-		DirectJoypad aOldKeyTrigger;					//前回押されたトリガーキーの種類
-		DirectJoypad aOldKeyRelease;					//前回押されたリリースキーの種類
-		int nCrossPressRot;								//ジョイパッドの十字キーの押されている方向
+		LPDIRECTINPUTDEVICE8 pInputDevice;							//入力デバイスへのポインタ
+		DIJOYSTATE aKeyState;										//ジョイパッドのプレス情報
+		DIJOYSTATE aKeyStateTrigger;								//ジョイパッドのトリガー情報
+		DIJOYSTATE aKeyStateRelease;								//ジョイパッドのリリース情報
+		bool bOldKeyTrigger[DIRECTION_COUNT_OF_STICK_AND_CROSS];	//各スティックと十字キーの方向が押されたかどうかトリガー			
+		bool bOldKeyRelease[DIRECTION_COUNT_OF_STICK_AND_CROSS];	//各スティックと十字キーの方向が押されたかどうかリリース
+		DirectJoypad aOldKeyTrigger;								//前回押されたトリガーキーの種類
+		DirectJoypad aOldKeyRelease;								//前回押されたリリースキーの種類
+		int nCrossPressRot;											//ジョイパッドの十字キーの押されている方向
 	};
 
 public:

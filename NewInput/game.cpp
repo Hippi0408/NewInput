@@ -91,8 +91,17 @@ void CGame::Draw()
 {
 	CInput* pInput = CInput::GetKey();
 
+	if (pInput->Trigger(JOYPAD_UP))
+	{
+		m_p2DPolygon[0]->Draw();
+	}
 
-	if (pInput->Trigger(DIK_0))
+	if (pInput->Trigger(JOYPAD_DOWN))
+	{
+		m_p2DPolygon[0]->Draw();
+	}
+
+	/*if (pInput->Trigger(DIK_0))
 	{
 		pInput->SetJoypadKeyConfig(0, JOYPAD_X, JOYPAD_A);
 	}
@@ -103,6 +112,6 @@ void CGame::Draw()
 		{
 			m_p2DPolygon[nCnt]->Draw();
 		}
-	}
+	}*/
 
 }
