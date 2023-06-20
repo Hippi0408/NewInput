@@ -870,7 +870,7 @@ void CInputJoyPad::KeyConfigSave()
 	FILE *pFile = NULL;			//ファイルポインター宣言
 
 	//ファイルを開く
-	pFile = fopen("KeyConfigData.txt", "w");
+	pFile = fopen("input\\KeyConfigData.txt", "w");
 
 	if (pFile == nullptr)
 	{//開けなかった時用
