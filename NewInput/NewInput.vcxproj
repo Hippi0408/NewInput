@@ -150,12 +150,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="2dpolygon.cpp" />
-    <ClCompile Include="DirectInput.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
-    <ClCompile Include="inputjoypad.cpp" />
-    <ClCompile Include="inputkeyboard.cpp" />
-    <ClCompile Include="inputmouse.cpp" />
+    <ClCompile Include="input\DirectInput.cpp" />
+    <ClCompile Include="input\inputjoypad.cpp" />
+    <ClCompile Include="input\inputkeyboard.cpp" />
+    <ClCompile Include="input\inputmouse.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="object.cpp" />
@@ -164,19 +164,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2dpolygon.h" />
-    <ClInclude Include="DirectInput.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input.h" />
-    <ClInclude Include="inputjoypad.h" />
-    <ClInclude Include="inputkeyboard.h" />
-    <ClInclude Include="inputkeydata.h" />
-    <ClInclude Include="inputmouse.h" />
+    <ClInclude Include="input\DirectInput.h" />
+    <ClInclude Include="input\inputjoypad.h" />
+    <ClInclude Include="input\inputkeyboard.h" />
+    <ClInclude Include="input\inputkeydata.h" />
+    <ClInclude Include="input\inputmouse.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="texture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="input\KeyConfigData.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
