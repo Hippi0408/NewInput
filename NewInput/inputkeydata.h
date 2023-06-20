@@ -74,6 +74,15 @@ enum DirectJoypad
 	JOYPAD_MAX
 };
 
+//ジョイパッドのスティックと十字キーの列挙型
+enum JoypadStickAndCross
+{
+	CONTROLLER_STICK_LEFT = 0,		//スティック左
+	CONTROLLER_STICK_RIGHT,			//スティック右
+	CONTROLLER_CROSS,				//十字キー
+	CONTROLLER_MAX
+};
+
 //キー種類(ジョイパッド)
 enum InputType
 {

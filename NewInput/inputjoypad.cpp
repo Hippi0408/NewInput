@@ -147,21 +147,25 @@ void CInputJoyPad::Uninit(void)
 //*************************************************************************************
 void CInputJoyPad::Update(void)
 {
-	//アプリ実行中のデバイス追加間隔
-	if (DEVICE_ADDITIONAL_INTERVAL_EXECUTING_APP < m_nDeviceAdditionalIntervalExecutingApp)
+	//デバイスの途中取得の有無
+	if (m_bIntermediateReception)
 	{
-		//カウンタの初期化
-		m_nDeviceAdditionalIntervalExecutingApp = 0;
-		//入力デバイスの登録関数
-		if (FAILED(JoyPadDeviceRegistration(m_hWnd)))
+		//アプリ実行中のデバイス追加間隔
+		if (DEVICE_ADDITIONAL_INTERVAL_EXECUTING_APP < m_nDeviceAdditionalIntervalExecutingApp)
 		{
-			assert(false);
+			//カウンタの初期化
+			m_nDeviceAdditionalIntervalExecutingApp = 0;
+			//入力デバイスの登録関数
+			if (FAILED(JoyPadDeviceRegistration(m_hWnd)))
+			{
+				assert(false);
+			}
 		}
-	}
-	else
-	{
-		//カウンタの加算
-		m_nDeviceAdditionalIntervalExecutingApp++;
+		else
+		{
+			//カウンタの加算
+			m_nDeviceAdditionalIntervalExecutingApp++;
+		}
 	}
 
 	//デバイスロスト検知用

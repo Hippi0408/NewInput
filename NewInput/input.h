@@ -89,6 +89,9 @@ public:
 	bool IsConnected(int nNum);	//ジョイパッドが接続されているかどうか
 	int GetIsConnectedNumMax(); //ジョイパッドの接続数
 
+	void IntermediateReception(bool bIR = false);	//デバイスの途中検知のオンオフ
+	bool GetIntermediateReception();		//現在デバイスの途中検知を行っているかどうか
+
 private:
 	bool KeyChackAll(STAN_DART_INPUT_KEY key, int type);			// 全デバイスの入力を確認
 	bool KeyChackNum(STAN_DART_INPUT_KEY key, int type, int nNum);	// 指定したデバイスの入力を確認

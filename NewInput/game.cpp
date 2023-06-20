@@ -57,6 +57,10 @@ HRESULT CGame::Init()
 	{
 		m_p2DPolygon[nCnt]->SetPolygon();
 	}
+
+	CInput* pInput = CInput::GetKey();
+	pInput->IntermediateReception(true);
+
 	return S_OK;
 }
 
@@ -91,24 +95,24 @@ void CGame::Draw()
 {
 	CInput* pInput = CInput::GetKey();
 
-	if (pInput->Trigger(JOYPAD_UP))
+	if (pInput->Press(JOYPAD_UP))
 	{
 		m_p2DPolygon[0]->Draw();
 	}
 
-	if (pInput->Trigger(JOYPAD_DOWN))
+	/*if (pInput->Trigger(JOYPAD_DOWN))
 	{
 		m_p2DPolygon[0]->Draw();
-	}
+	}*/
 
 	/*if (pInput->Trigger(DIK_0))
 	{
 		pInput->SetJoypadKeyConfig(0, JOYPAD_X, JOYPAD_A);
-	}
+	}*/
 
-	for (int nCnt = 0; nCnt < 4; nCnt++)
+	/*for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
-		if (pInput->IsConnected(nCnt) && !pInput->Press(JOYPAD_X, nCnt))
+		if (pInput->IsConnected(nCnt) && pInput->Press(JOYPAD_UP))
 		{
 			m_p2DPolygon[nCnt]->Draw();
 		}

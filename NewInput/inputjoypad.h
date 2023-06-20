@@ -98,6 +98,9 @@ public:
 	//一時保存用デバイスポインタの配列、Set
 	void SetDevicePointer(LPDIRECTINPUTDEVICE8 pDevice) { m_apDevice[m_nAfterAppExecutionJoyNumCnt] = pDevice; m_nAfterAppExecutionJoyNumCnt++; }
 
+	void IntermediateReception(bool bIR = false) { m_bIntermediateReception = bIR; }	//デバイスの途中検知のオンオフ
+	bool GetIntermediateReception() { return m_bIntermediateReception; }		//現在デバイスの途中検知を行っているかどうか
+
 private:
 	SJoyPad m_JoyPadData[JOYPAD_DATA_MAX];		//ジョイパッドのひとつに必要な情報の構造体
 	DirectJoypad m_AllOldKeyTrigger;			//全ジョイパッド共通の前回されたトリガーキー
@@ -108,5 +111,6 @@ private:
 	HWND m_hWnd;								//ウィンドウハンドルの保存
 	int m_nDeviceAdditionalIntervalExecutingApp;//アプリ実行中のデバイス追加間隔
 	LPDIRECTINPUTDEVICE8 m_apDevice[JOYPAD_DATA_MAX]; //デバイスポインタの一時保存場所
+	bool m_bIntermediateReception;	//途中デバイス受付
 };
 #endif
